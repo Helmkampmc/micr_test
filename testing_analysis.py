@@ -37,12 +37,14 @@ new_cols= ['ORI - Agency', "Crime Against", 'MICR Offense', '2019 Crimes']
 df1= df1.reindex(columns=new_cols)
 df1['2019 Crimes'] = df1['2019 Crimes'].astype(int)
 
+df3=df[['ORI - Agency', "Crime Against", 'MICR Offense', '2021 Crimes']]
+
 #Create dropdown with ori selector
-ori_list = sorted(df['ORI - Agency'].unique())
+ori_list = sorted(df3['ORI - Agency'].unique())
 ori_selection = st.selectbox('Select an ORI - Agency:', ori_list, index=0)
 
 #filtered data by ORI
-filtered_df = df[df['ORI - Agency'] == ori_selection]
+filtered_df = df3[df3['ORI - Agency'] == ori_selection]
 filtered_df=filtered_df.groupby('MICR Offense').sum()
 
 # Display filtered data in Streamlit
@@ -56,7 +58,7 @@ crime_counts = filtered_df.nlargest(5, "2021 Crimes")
 fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
-#bring 2021 2020 and 2019 data together for line chart
-df2=
+#top crime over time
+
 
 st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
