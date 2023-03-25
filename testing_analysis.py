@@ -62,7 +62,7 @@ st.plotly_chart(fig)
 
 
 
-df4=filtered_df.nlargest(1)
+df4=filtered_df.nlargest(1, '2021 Crimes')
 
 # Filter df1 and df by df4 ORI - Agency and MICR Offense
 df1_filtered = df1[df1['ORI - Agency'] == df4.index[0]].set_index('MICR Offense')['2019 Crimes']
