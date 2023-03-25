@@ -62,7 +62,7 @@ st.plotly_chart(fig)
 
 
 # create a line chart for top crime over time
-top_crime = filtered_df.nlargest(1, "2021 Crimes").index[0]
+top_crime = filtered_df.nlargest(1, "2021 Crimes")
 df_filtered = df[(df['ORI - Agency'] == ori_selection) & 
                         (df['MICR Offense'] == top_crime)][['MICR Offense', '2019 Crimes', '2020 Crimes', '2021 Crimes']]
 df_filtered = df_filtered.set_index('MICR Offense').T
