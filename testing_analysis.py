@@ -58,7 +58,20 @@ crime_counts = filtered_df.nlargest(5, "2021 Crimes")
 fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
-#top crime over time
+# merge df and df1 on ORI - Agency, Crime Against, and MICR Offense
+df_merged = pd.merge(df, df1[['ORI - Agency', 'Crime Against', 'MICR Offense', '2019 Crimes']], 
+                     on=['ORI - Agency', 'Crime Against', 'MICR Offense'], how='left')
 
+# fill missing 2019 Crimes with 0
+df_merged['2019 Crimes'] = df_merged['2019 Crimes'].fillna(0).astype(int)
+
+# create a line chart for top crime over time
+top_crime = filtered_df.nlargest(1, "2021 Crimes").index[0]
+df_filtered = df_merged[(df_merged['ORI - Agency'] == ori_selection) & 
+                        (df_merged['MICR Offense'] == top_crime)][['MICR Offense', '2019 Crimes', '2020 Crimes', '2021 Crimes']]
+df_filtered = df_filtered.set_index('MICR Offense').T
+df_filtered.index = df_filtered.index.astype(str)
+st.write(f'### Top Crime Over Time - {ori_selection} - {top_crime}')
+st.line_chart(df_filtered)
 
 st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
