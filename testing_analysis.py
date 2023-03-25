@@ -60,14 +60,5 @@ crime_counts = filtered_df.nlargest(5, "2021 Crimes")
 fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
-# Filter 2019 data by ORI - Agency and MICR Offense
-df1_filtered = df1[(df1['ORI - Agency'] == ori_selection) & (df1['MICR Offense'] == top_crime.index[0])]
-
-# Merge with top crime DataFrame
-top_crime = top_crime.merge(df1_filtered[['MICR Offense', '2019 Crimes']], on='MICR Offense', how='left')
-
-# Display top crime DataFrame
-st.write(f'### Top Crime - {ori_selection}')
-st.write(top_crime.style.set_table_styles([{'selector': 'thead', 'props': [('background-color', '#393939'), ('color', 'white')]}, {'selector': 'tbody', 'props': [('border-color', '#393939')]}]), full_width=True)
 
 st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
