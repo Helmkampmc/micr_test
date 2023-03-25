@@ -1,4 +1,6 @@
+import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 #reading and cleaning 2021 data and keeping 2021 and 2020 data
 url="https://www.michigan.gov/msp/-/media/Project/Websites/msp/micr-assets/2021/Agency-Crime-Stats_2021.xlsx?rev=f073f9242f524c5188e8b7a4a459d2bc&hash=8CF27427D05B34CED651F41E9EE137C7"
