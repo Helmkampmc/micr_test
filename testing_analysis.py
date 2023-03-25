@@ -60,12 +60,20 @@ crime_counts = filtered_df.nlargest(5, "2021 Crimes")
 fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
+
+
+
+
+# filter df1 to only include rows where MICR Offense matches df
+df1_filtered = df1[df1['MICR Offense'].isin(df['MICR Offense'])]
+
 # merge df and df1 on ORI - Agency, Crime Against, and MICR Offense
-df_merged = pd.merge(df, df1[['ORI - Agency', 'Crime Against', 'MICR Offense', '2019 Crimes']], 
+df_merged = pd.merge(df, df1_filtered[['ORI - Agency', 'Crime Against', 'MICR Offense', '2019 Crimes']], 
                      on=['ORI - Agency', 'Crime Against', 'MICR Offense'], how='left')
 
 # fill missing 2019 Crimes with 0
 df_merged['2019 Crimes'] = df_merged['2019 Crimes'].fillna(0).astype(int)
+
 
 # create a line chart for top crime over time
 top_crime = filtered_df.nlargest(1, "2021 Crimes").index[0]
