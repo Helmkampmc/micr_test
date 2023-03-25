@@ -60,7 +60,22 @@ crime_counts = filtered_df.nlargest(5, "2021 Crimes")
 fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
+
+
 df4=filtered_df.nlargest(1)
+
+# Filter df1 and df by df4 ORI - Agency and MICR Offense
+df1_filtered = df1[df1['ORI - Agency'] == df4.index[0]].set_index('MICR Offense')['2019 Crimes']
+df_filtered = df[df['ORI - Agency'] == df4.index[0]].set_index('MICR Offense')['2020 Crimes']
+
+# Merge df1 and df on ORI - Agency and MICR Offense using an outer join
+df_merged = pd.concat([df1_filtered, df_filtered], axis=1, join='outer')
+df_merged.columns = ['2019 Crimes', '2020 Crimes']
+df_merged = df_merged.reset_index()
+
+# Create a line chart using Plotly Express
+fig = px.line(df_merged, x='MICR Offense', y=['2019 Crimes', '2020 Crimes'], title=f'Crime Trends - {df4.index[0]}')
+st.plotly_chart(fig)
 
 
 st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
