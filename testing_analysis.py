@@ -67,6 +67,9 @@ df4=df4.nlargest(1, '2021 Crimes')
 filtered_df1=df1[df1["ORI - Agency"]==ori_selection]
 filtered_df1=filtered_df1.nlargest(1, '2019 Crimes')
 #df4['2019 Crimes']=filtered_df1['2019 Crimes'].iloc[0]
+old_cols = df4.columns.values 
+new_cols= ['ORI - Agency', 'MICR Offense', "2020 Crimes", '2021 Crimes']
+df4 = df4.reindex(columns=new_cols)
 st.dataframe(df4)
 
 # Create a line chart using Plotly Express
