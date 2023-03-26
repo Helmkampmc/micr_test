@@ -66,10 +66,10 @@ df4=filtered_df.nlargest(1, '2021 Crimes')
 filtered_df1=df1[df1["ORI - Agency"]==ori_selection]
 filtered_df1=filtered_df1.nlargest(1, '2019 Crimes')
 df4['2019 Crimes']=filtered_df1['2019 Crimes']
+st.write(df4['2021 Crimes'],df4['2020 Crimes'],df4['2019 Crimes']
 
 # Create a line chart using Plotly Express
-fig = px.line(df4, title=f'Top Crime Trend - {df4.index[0]}')
-st.plotly_chart(fig)
+
 
 
 st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
