@@ -63,7 +63,7 @@ st.plotly_chart(fig)
 
 
 df4=filtered_df.nlargest(1, '2021 Crimes')
-df4=df4[df4["ORI - Agency"]==top_crime['ORI - Agency'].iloc[0].rstrip()]
+filtered_df1=filtered_df1[filtered_df1["ORI - Agency"]==df4['ORI - Agency'].iloc[0].rstrip()]
 filtered_df1=filtered_df1[filtered_df1["MICR Offense"]==df4['MICR Offense'].iloc[0]]
 filtered_df1['2019 Crimes']=filtered_df1['2019 Crimes'].astype('int')
 df4['2019 Crimes']=filtered_df1['2019 Crimes'].iloc[0]
