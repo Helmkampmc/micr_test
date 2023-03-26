@@ -62,10 +62,11 @@ st.plotly_chart(fig)
 
 
 
-df4=filtered_df.nlargest(1, '2021 Crimes')
+df4=df[df['ORI - Agency'] == ori_selection]
+df4=df4.nlargest(1, '2021 Crimes')
 filtered_df1=df1[df1["ORI - Agency"]==ori_selection]
 filtered_df1=filtered_df1.nlargest(1, '2019 Crimes')
-df4['2019 Crimes']=filtered_df1['2019 Crimes']
+df4['2019 Crimes']=filtered_df1['2019 Crimes'].astype('int64')
 st.write(df4)
 
 # Create a line chart using Plotly Express
