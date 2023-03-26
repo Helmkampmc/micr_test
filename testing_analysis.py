@@ -65,8 +65,7 @@ st.plotly_chart(fig)
 df4=filtered_df.nlargest(1, '2021 Crimes')
 filtered_df1=df1[df1["ORI - Agency"]==ori_selection]
 filtered_df1=filtered_df1.nlargest(1, '2019 Crimes')
-filtered_df1['2019 Crimes']=filtered_df1['2019 Crimes'].astype('int')
-df4['2019 Crimes']=filtered_df1['2019 Crimes'].iloc[0]
+df4['2019 Crimes']=filtered_df1['2019 Crimes']
 
 # Create a line chart using Plotly Express
 fig = px.line(df4, title=f'Top Crime Trend - {df4.index[0]}')
