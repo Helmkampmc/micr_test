@@ -3,77 +3,85 @@ import pandas as pd
 import plotly.express as px
 
 #reading and cleaning 2021 data and keeping 2021 and 2020 data
-url="https://www.michigan.gov/msp/-/media/Project/Websites/msp/micr-assets/2021/Agency-Crime-Stats_2021.xlsx?rev=f073f9242f524c5188e8b7a4a459d2bc&hash=8CF27427D05B34CED651F41E9EE137C7"
-df=pd.read_excel(url, sheet_name="Agency Crime Stats", header=1)
-df=df.fillna(method="ffill")
-df=df.iloc[1: , :]
-df['ORI - Agency'] = df['ORI - Agency'].str.split('-').str[1]
-df['MICR Offense'] = df['MICR Offense'].str.split('-').str[1]
-df = df[df['MICR Offense'].str.contains("[Tt]otal") == False]
-df = df[df["Crime Against"].str.contains("[Tt]otal") == False]
-df = df[df['ORI - Agency'].str.contains("MSP") == False]
-df['ORI - Agency'] = df['ORI - Agency'].str.replace('[Tt]otal', '')
-df['ORI - Agency'] = df['ORI - Agency'].str.replace('[Gg]rand :', '')
-df['ORI - Agency'] = df['ORI - Agency'].str.lstrip()
-df['MICR Offense'] = df['MICR Offense'].str.lstrip()
-old_cols = df.columns.values 
-new_cols= ['ORI - Agency', "Crime Against", 'MICR Offense', '2021 Crimes', "2020 Crimes"]
-df = df.reindex(columns=new_cols)
+data = pd.read_excel('Agency Crime Stats_2021.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
+data=data.fillna(method="ffill")
+data = data.iloc[1: , :]
 
-#reading and cleaning 2020 data and keeping 2019 data
-url="https://www.michigan.gov/msp/-/media/Project/Websites/msp/micr-assets/2020/agency_crime_statistics_report.xlsx?rev=43577a0bfb944b199a6dda29ecd724cc&hash=402A6F33ED9EB223CAB01934C2335ACC"
-df1=pd.read_excel(url, sheet_name="Agency Crime Stats", header=1)
-df1=df1.fillna(method="ffill")
-df1=df1.iloc[1: , :]
-df1['ORI - Agency'] = df1['ORI - Agency'].str.split('-').str[1]
-df1['MICR Offense'] = df1['MICR Offense'].str.split('-').str[1]
-df1 = df1[df1['MICR Offense'].str.contains("[Tt]otal") == False]
-df1 = df1[df1["Crime Against"].str.contains("[Tt]otal") == False]
-df1 = df1[df1['ORI - Agency'].str.contains("MSP") == False]
-df1['ORI - Agency'] = df1['ORI - Agency'].str.replace('[Tt]otal', '')
-df1['ORI - Agency'] = df1['ORI - Agency'].str.replace('[Gg]rand :', '')
-df1['ORI - Agency'] = df1['ORI - Agency'].str.lstrip()
-df1['MICR Offense'] = df1['MICR Offense'].str.lstrip()
-old_cols = df1.columns.values 
-new_cols= ['ORI - Agency', "Crime Against", 'MICR Offense', '2019 Crimes']
-df1= df1.reindex(columns=new_cols)
-df1['2019 Crimes'] = df1['2019 Crimes'].astype(int)
 
-df3=df[['ORI - Agency', "Crime Against", 'MICR Offense', '2021 Crimes']]
+data['Agency'] = data['ORI - Agency'].apply(lambda x: re.split('^(.*?)-', x, 1)[-1])
+data['Criminal Offense'] = data['MICR Offense'].apply(lambda x: re.split('^(.*?)-', x, 1)[-1])
+
+old_cols = data.columns.values 
+new_cols= ['Agency', "Crime Against", 'Criminal Offense', "Offenses", 'Incidents', '2020 Crimes', "2021 Crimes"]
+data = data.reindex(columns=new_cols)
+
+data = data[data['Criminal Offense'].str.contains("[Tt]otal") == False]
+data = data[data["Crime Against"].str.contains("[Tt]otal") == False]
+data = data[data["Agency"].str.contains("MSP") == False]
+data = data[data["Agency"].str.contains("County") == False]
+
+data['Agency'] = data['Agency'].str.lstrip()
+data['Criminal Offense'] = data['Criminal Offense'].str.lstrip()
+data['Agency'] = data['Agency'].str.replace(" Grand Total:| Total:", "", regex=True).str.lstrip()
+data['Criminal Offense'] = data['Criminal Offense'].replace('Nonaggravated Assault', 'Non-Aggravated Assault')
+
+data22 = pd.read_excel('Agency Crime Stats_2022.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
+data22=data22.fillna(method="ffill")
+data22 = data22.iloc[1: , :]
+
+data22['Agency'] = data22['ORI - Agency'].apply(lambda x: re.split('^(.*?)-', x, 1)[-1])
+data22['Criminal Offense'] = data22['MICR Offense'].apply(lambda x: re.split('^(.*?)-', x, 1)[-1])
+
+old_cols = data22.columns.values 
+new_cols= ['Agency', "Crime Against", 'Criminal Offense', "Offense", 'Incident', '2022 Crimes']
+data22 = data22.reindex(columns=new_cols)
+
+data22 = data22[data22['Criminal Offense'].str.contains("[Tt]otal") == False]
+data22 = data22[data22["Crime Against"].str.contains("[Tt]otal") == False]
+data22 = data22[data22["Agency"].str.contains("MSP") == False]
+data22 = data22[data22["Agency"].str.contains("County") == False]
+
+data22['Agency'] = data22['Agency'].str.lstrip()
+data22['Criminal Offense'] = data22['Criminal Offense'].str.lstrip()
+data22['Agency'] = data22['Agency'].str.replace(" Grand Total:| Total:", "", regex=True).str.lstrip()
+
+# Merge the datasets on 'Agency' and 'Criminal Offense'
+merged_data = pd.merge(data22, data[['Agency', 'Criminal Offense', '2021 Crimes', '2020 Crimes']], 
+                       on=['Agency', 'Criminal Offense'], how='left')
+
+# Replace NaN with 0 in the merged dataset
+merged_data[['2021 Crimes', '2020 Crimes']] = merged_data[['2021 Crimes', '2020 Crimes']].fillna(0)
+
+# If you want, you can also convert the '2021 Crimes' and '2020 Crimes' columns to integer after filling NaN
+merged_data['2021 Crimes'] = merged_data['2021 Crimes'].astype(int)
+merged_data['2020 Crimes'] = merged_data['2020 Crimes'].astype(int)
+
+df3=data22[['Agency', "Crime Against", 'MICR Offense', '2022 Crimes']]
 
 #Create dropdown with ori selector
-ori_list = sorted(df3['ORI - Agency'].unique())
-ori_selection = st.selectbox('Select an ORI - Agency:', ori_list, index=0)
+ori_list = sorted(df3['Agency'].unique())
+ori_selection = st.selectbox('Select an Agency:', ori_list, index=0)
 
 #filtered data by ORI
-filtered_df = df3[df3['ORI - Agency'] == ori_selection]
-filtered_df=filtered_df.groupby('MICR Offense').sum()
+filtered_df = df3[df3['Agency'] == ori_selection]
+filtered_df=filtered_df.groupby('Criminal Offense').sum()
 
 # Display filtered data in Streamlit
-st.write(f'### Michigan Crime Data (2021) - {ori_selection}')
+st.write(f'### Michigan Crime Data (2022) - {ori_selection}')
 st.write(filtered_df.style.set_table_styles([{'selector': 'thead', 'props': [('background-color', '#393939'), ('color', 'white')]}, {'selector': 'tbody', 'props': [('border-color', '#393939')]}]), full_width=True)
 
 
 # Show bar chart of crime types for filtered data
 st.write(f'### Top 5 Crimes - {ori_selection}')
-crime_counts = filtered_df.nlargest(5, "2021 Crimes")
-fig = px.pie(crime_counts, values='2021 Crimes', names=crime_counts.index)
+crime_counts = filtered_df.nlargest(5, "2022 Crimes")
+fig = px.pie(crime_counts, values='2022 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
 
 
-df4=df[df['ORI - Agency'] == ori_selection]
-df4=df4.nlargest(1, '2021 Crimes')
-filtered_df1=df1[df1["ORI - Agency"]==ori_selection]
-filtered_df1=filtered_df1.nlargest(1, '2019 Crimes')
-#df4['2019 Crimes']=filtered_df1['2019 Crimes'].iloc[0]
-old_cols = df4.columns.values 
-new_cols= ['ORI - Agency', 'MICR Offense', "2020 Crimes", '2021 Crimes']
-df4 = df4.reindex(columns=new_cols)
-st.dataframe(df4)
 
 # Create a line chart using Plotly Express
 
 
 
-st.write('All data displayed is current as of 2021 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
+st.write('All data displayed is current as of 2022 as that is the most up-to-date publicly available Michigan crime data. Additional crime data can be found here: https://www.michigan.gov/msp/divisions/cjic/micr/annual-reports')
