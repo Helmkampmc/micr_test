@@ -57,7 +57,7 @@ merged_data[['2021 Crimes', '2020 Crimes']] = merged_data[['2021 Crimes', '2020 
 merged_data['2021 Crimes'] = merged_data['2021 Crimes'].astype(int)
 merged_data['2020 Crimes'] = merged_data['2020 Crimes'].astype(int)
 
-df3=data22[['Agency', "Crime Against", 'MICR Offense', '2022 Crimes']]
+df3=data22[['Agency', "Crime Against", 'Criminal Offense', '2022 Crimes']]
 
 #Create dropdown with ori selector
 ori_list = sorted(df3['Agency'].unique())
