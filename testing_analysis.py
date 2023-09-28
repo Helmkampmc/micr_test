@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import re
 
 #reading and cleaning 2021 data and keeping 2021 and 2020 data
 data = pd.read_excel('Agency Crime Stats_2021.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
