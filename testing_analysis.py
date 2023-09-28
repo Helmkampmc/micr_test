@@ -80,6 +80,31 @@ fig = px.pie(crime_counts, values='2022 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
 
+import plotly.express as px
+
+# Filter merged_data DataFrame by ORI
+filtered_merged_data = merged_data[merged_data['Agency'] == ori_selection]
+
+# Melt the DataFrame to long-form to plot line chart for each year
+melted_df = filtered_merged_data.melt(id_vars=['Agency', 'Criminal Offense', 'Crime Against', 'Offense', 'Incident'],
+                                      value_vars=['2020 Crimes', '2021 Crimes', '2022 Crimes'],
+                                      var_name='Year',
+                                      value_name='Number of Crimes')
+
+# Create the line graph
+fig = px.line(melted_df,
+              x='Year',
+              y='Number of Crimes',
+              color='Criminal Offense',
+              title=f'Crime Trends Over Years for {ori_selection}',
+              labels={'Number of Crimes': 'Number of Crimes', 'Year': 'Year'},
+              line_shape='linear')
+
+# Customize the layout if needed
+fig.update_layout(autosize=True)
+
+# Display the line graph in Streamlit
+st.plotly_chart(fig)
 
 
 # Create a line chart using Plotly Express
