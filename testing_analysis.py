@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import re
+import plotly.express as px
 
 #reading and cleaning 2021 data and keeping 2021 and 2020 data
 data = pd.read_excel('Agency Crime Stats_2021.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
@@ -80,31 +81,28 @@ fig = px.pie(crime_counts, values='2022 Crimes', names=crime_counts.index)
 st.plotly_chart(fig)
 
 
-import plotly.express as px
+
 
 # Filter merged_data DataFrame by ORI
-filtered_merged_data = merged_data[merged_data['Agency'] == ori_selection]
+# Filtering merged data based on selected ORI agency
+filtered_total = merged_data[merged_data['Agency'] == ori_selection]
 
-# Melt the DataFrame to long-form to plot line chart for each year
-melted_df = filtered_merged_data.melt(id_vars=['Agency', 'Criminal Offense', 'Crime Against', 'Offense', 'Incident'],
-                                      value_vars=['2020 Crimes', '2021 Crimes', '2022 Crimes'],
-                                      var_name='Year',
-                                      value_name='Number of Crimes')
+# Aggregating Total Crimes for each year for the selected agency
+total_crimes_aggregated = {
+    '2020 Crimes': filtered_total['2020 Crimes'].sum(),
+    '2021 Crimes': filtered_total['2021 Crimes'].sum(),
+    '2022 Crimes': filtered_total['2022 Crimes'].sum()
+}
 
-# Create the line graph
-fig = px.line(melted_df,
-              x='Year',
-              y='Number of Crimes',
-              color='Criminal Offense',
-              title=f'Crime Trends Over Years for {ori_selection}',
-              labels={'Number of Crimes': 'Number of Crimes', 'Year': 'Year'},
-              line_shape='linear')
+# Preparing data for Plotting
+total_crimes_df = pd.DataFrame(list(total_crimes_aggregated.items()), columns=['Year', 'Total Crimes'])
 
-# Customize the layout if needed
-fig.update_layout(autosize=True)
+# Creating Line Chart for Total Crimes
+fig_total = px.line(total_crimes_df, x='Year', y='Total Crimes', title=f'Total Crime Trends Over Years for {ori_selection}', line_shape='linear')
 
 # Display the line graph in Streamlit
-st.plotly_chart(fig)
+st.plotly_chart(fig_total)
+
 
 
 # Create a line chart using Plotly Express
