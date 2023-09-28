@@ -5,7 +5,7 @@ import re
 
 #reading and cleaning 2021 data and keeping 2021 and 2020 data
 data = pd.read_excel('Agency Crime Stats_2021.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
-data=data.fillna(method="ffill")
+data=data.ffill()
 data = data.iloc[1: , :]
 
 
@@ -27,7 +27,7 @@ data['Agency'] = data['Agency'].str.replace(" Grand Total:| Total:", "", regex=T
 data['Criminal Offense'] = data['Criminal Offense'].replace('Nonaggravated Assault', 'Non-Aggravated Assault')
 
 data22 = pd.read_excel('Agency Crime Stats_2022.xlsx', sheet_name='Agency Crime Stats', skiprows=1)
-data22=data22.fillna(method="ffill")
+data22=data22.ffill()
 data22 = data22.iloc[1: , :]
 
 data22['Agency'] = data22['ORI - Agency'].apply(lambda x: re.split('^(.*?)-', x, 1)[-1])
@@ -69,7 +69,8 @@ filtered_df=filtered_df.groupby('Criminal Offense').sum()
 
 # Display filtered data in Streamlit
 st.write(f'### Michigan Crime Data (2022) - {ori_selection}')
-st.write(filtered_df.style.set_table_styles([{'selector': 'thead', 'props': [('background-color', '#393939'), ('color', 'white')]}, {'selector': 'tbody', 'props': [('border-color', '#393939')]}]), full_width=True)
+st.write(filtered_df.style.set_table_styles([{'selector': 'thead', 'props': [('background-color', '#393939'), ('color', 'white')]}, {'selector': 'tbody', 'props': [('border-color', '#393939')]}]))
+
 
 
 # Show bar chart of crime types for filtered data
